@@ -438,13 +438,13 @@ RESPONSIVE DESIGN (MOBILE BOTTOM SHEET DETECT)
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
     }
 
-  /* Position button firmly in Top-Right corner */
+    /* Position button firmly in Top-Left corner */
     #sidebar-toggle {
-        position: fixed; /* Ensures it stays pinned relative to screen */
+        position: fixed;
         top: 12px;
-        right: 12px;
-        left: auto;
-        z-index: 1000; /* Keeps it above Mapbox controls */
+        left: 12px;    /* Locked to Top-Left */
+        right: auto;
+        z-index: 1000;
     }
 
     #sidebar.collapsed {
@@ -452,12 +452,12 @@ RESPONSIVE DESIGN (MOBILE BOTTOM SHEET DETECT)
         opacity: 0;
     }
 
-  /* When collapsed, keep top-right positioning without layout jumps */
+    /* Keep top-left positioning when collapsed */
     #sidebar.collapsed ~ #sidebar-toggle {
-        left: auto;
-        right: 12px;
+        left: 12px;    /* Stays Top-Left */
+        right: auto;
         top: 12px;
-        transform: rotate(180deg); /* Maintains rotation visual cue */
+        transform: rotate(180deg);
     }
 }
 
