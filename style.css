@@ -1,0 +1,532 @@
+/* ==========================================================
+GENERAL & SYSTEM RESETS
+========================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    background: #f5f5f7;
+    color: #1d1d1f;
+}
+
+/* ==========================================================
+FULLSCREEN MAP
+========================================================== */
+#map-container {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* ==========================================================
+APPLE-STYLE FLOATING CARD PANEL
+========================================================== */
+#sidebar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    bottom: 20px;
+    width: 375px;
+    max-height: calc(100vh - 40px);
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+    overflow: hidden;
+}
+
+/* Card Header Component */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+#logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.header-text h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+}
+
+.header-text p {
+    font-size: 11px;
+    color: #86868b;
+    margin-top: 1px;
+}
+
+#info-button {
+    margin-left: auto;
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    color: #0071e3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+#info-button:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollable Inner Content Container */
+.card-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 16px 16px 16px;
+}
+
+.sidebar-section {
+    padding: 14px 0;
+}
+
+/* ==========================================================
+APPLE MAPS SEARCH INPUT
+========================================================== */
+.search-box {
+    padding: 12px 16px;
+}
+
+#search-input {
+    width: 100%;
+    border: none;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 15px;
+    outline: none;
+    color: #1d1d1f;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+#search-input:focus {
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.3);
+}
+
+#search-results {
+    margin-top: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.search-result {
+    padding: 12px;
+    margin-bottom: 6px;
+    background: #ffffff;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    transition: background 0.2s;
+}
+
+.search-result:hover {
+    background: #0071e3;
+    color: #ffffff;
+}
+
+/* ==========================================================
+DYNAMIC LAYERS / LEGEND
+========================================================== */
+.layers-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #86868b;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-main-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 8px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.legend-section-content {
+    padding-left: 8px;
+    margin-top: 4px;
+    transition: max-height 0.3s ease-out;
+}
+
+/* Custom spacing for the nested organization items */
+.legend-section-content ul {
+    list-style: none;
+    padding-left: 12px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+.legend-section-content ul li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0; /* Adjust this value up or down to change the vertical gap spacing */
+}
+
+.legend-category-header {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #333336;
+}
+
+.legend-item-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 4px;
+    font-size: 13px;
+}
+
+/* Checkbox customizations styled to mimic iOS toggles broadly */
+input[type="checkbox"] {
+    accent-color: #0071e3;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.legend-link {
+    color: #0071e3;
+    cursor: pointer;
+    font-size: 13px;
+}
+.legend-link:hover {
+    text-decoration: underline;
+}
+
+
+/* ==========================================================
+   APPLE MAPS UI - SCALE CONTROL
+   ========================================================== */
+
+/* Outer container positioning and system font styling */
+.mapboxgl-ctrl-scale {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;    font-size: 10px;
+    font-weight: 500;
+    color: #1c1c1e; /* iOS Dark Text */
+    background-color: rgba(255, 255, 255, 0.75) !important; /* iOS Vibrant Light vibrancy */
+    backdrop-filter: blur(10px) saturate(190%); /* Apple glassmorphic blur */
+    -webkit-backdrop-filter: blur(10px) saturate(190%);
+    border: none !important;
+    border-bottom: 1.5px solid #1c1c1e !important; /* Elegant hairline marker */
+    border-left: 1.5px solid #1c1c1e !important;   /* Left anchor edge */
+    border-right: 1.5px solid #1c1c1e !important;  /* Right anchor edge */
+    border-radius: 0px !important;                 /* Sharp corners for scale bar */
+    padding: 1px 5px 3px 5px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);      /* Minimal float shadow */
+    text-align: center;
+    box-sizing: border-box;
+    pointer-events: none; /* Keep it strictly informational, won't capture clicks */
+    transition: width 0.15s ease-out; /* Smoothly scales when zooming */
+}
+
+/* Adjust the bottom-right placement to play nice with other floating UI elements */
+.mapboxgl-ctrl-bottom-right {
+    right: 16px !important;
+    bottom: 16px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px; /* Clean separation from copyright attribution */
+}
+
+/* Dark mode fallback compatibility if your base map goes dark */
+@media (prefers-color-scheme: dark) {
+    .mapboxgl-ctrl-scale {
+        color: #f5f5f7;
+        background-color: rgba(30, 30, 30, 0.7) !important;
+        border-color: #f5f5f7 !important;
+    }
+}
+
+/* ==========================================================
+MINIMALIST PANEL TOGGLE BUTTON
+========================================================== */
+#sidebar-toggle {
+    position: absolute;
+    top: 24px;
+    left: 410px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #1d1d1f;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 11;
+    transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.2s;
+}
+
+#sidebar-toggle:hover {
+    transform: scale(1.05);
+}
+
+/* Collapsed UI States */
+#sidebar.collapsed {
+    transform: translateX(-420px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+#sidebar.collapsed ~ #sidebar-toggle {
+    left: 20px;
+    transform: rotate(180deg);
+}
+
+/* ==========================================================
+MODAL OVERLAYS & POPUPS
+========================================================== */
+#map-guide-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+.guide-window {
+    width: 90%;
+    max-width: 440px;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+#map-guide-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    border: none;
+    background: rgba(0, 0, 0, 0.05);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.guide-list {
+    list-style: none;
+    margin-top: 14px;
+    font-size: 14px;
+    color: #48484a;
+    line-height: 1.6;
+}
+
+/* Mapbox Custom Popups to blend natively */
+.mapboxgl-popup-content {
+    border-radius: 14px !important;
+    padding: 14px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.mapboxgl-popup-close-button {
+    font-size: 16px;
+    padding: 4px 8px;
+    color: #86868b;
+}
+
+/* ==========================================================
+FIX FOR SLIDING MARKERS DURING DRAG + MARKER TEXT STYLING
+========================================================== */
+
+/* Target the custom marker container and force no animations during map movement */
+.mapboxgl-marker {
+    transition: none !important;
+}
+
+.marker-label {
+    position: absolute;
+    top: 42px; /* Places the label text 6px below your 36px marker circle */
+    left: 50%;
+    transform: translateX(-50%); /* Crucial trick to center absolute elements */
+    white-space: nowrap; /* Prevents long names from wrapping awkwardly */
+    text-align: center;
+    pointer-events: none;
+    
+    /* Apple-inspired subtle background panel for maximum legibility */
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1d1d1f;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure your custom org icon markers don't inherit layout transitions */
+.marker, .marker-label, #logo {
+    /* If you have any transitions on these, make sure they do NOT affect 'transform' */
+    transition: background 0.2s, box-shadow 0.2s, opacity 0.2s; /* explicitly name non-transform properties */
+}
+
+/* ==========================================================
+RESPONSIVE DESIGN (MOBILE BOTTOM SHEET DETECT)
+========================================================== */
+@media (max-width: 768px) {
+    #sidebar {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-height: 40vh;
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    #sidebar-toggle {
+        top: 16px;
+        left: auto;
+        right: 16px;
+    }
+
+    #sidebar.collapsed {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    #sidebar.collapsed ~ #sidebar-toggle {
+        left: auto;
+        right: 16px;
+        transform: none;
+    }
+}
+
+/* Clean Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+
+/* ==========================================================
+   APPLE MAPS UI - CHOROPLETH LEGEND CARD
+   ========================================================== */
+.choropleth-legend {
+    background: rgba(255, 255, 255, 0.75) !important; /* Apple Translucent White */
+    backdrop-filter: blur(10px) saturate(190%);
+    -webkit-backdrop-filter: blur(10px) saturate(190%);
+    border-radius: 8px !important;
+    padding: 10px 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    pointer-events: none;
+    margin: 0 !important; /* Use mapbox-ctrl-bottom-right flex gap instead */
+    transition: opacity 0.2s ease, display 0.2s ease;
+}
+
+.choropleth-legend .legend-title {
+    font-size: 7px;
+    font-weight: 600;
+    color: #1c1c1e; /* iOS System Label Color */
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+/* Matches your step values: #f7fbff -> #08306b */
+.choropleth-legend .legend-scale-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, 
+       #ffffff, 
+        #f0f0f0, 
+        #d9d9d9, 
+        #bdbdbd, 
+        #969696, 
+        #737373, 
+        #525252, 
+        #252525, 
+        #000000
+    );
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.choropleth-legend .legend-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    font-weight: 500;
+    color: #86868b; /* iOS Secondary Label Color */
+}
+
+/* Dark mode compatibility */
+@media (prefers-color-scheme: dark) {
+    .choropleth-legend {
+        background-color: rgba(30, 30, 30, 0.7) !important;
+    }
+    .choropleth-legend .legend-title {
+        color: #f5f5f7;
+    }
+    .choropleth-legend .legend-labels {
+        color: #aeaeb2;
+    }
+}

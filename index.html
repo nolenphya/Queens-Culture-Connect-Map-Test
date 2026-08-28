@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queens Culture Connect</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- MAP CONTAINER (Now full screen) -->
+    <main id="map-container">
+        <div id="map"></div>
+    </main>
+
+    <!-- FLOATING SIDEBAR (Apple Maps Style Card) -->
+    <aside id="sidebar" class="floating-card">
+        
+        <!-- App Identity -->
+        <header class="card-header">
+            <img src="fthlogo.png" id="logo" alt="Flushing Town Hall Logo">
+            <div class="header-text">
+                <h1>Queens Culture Connect</h1>
+                <p>Discover Organizations & Artists</p>
+            </div>
+            <button id="info-button" title="About">ⓘ</button>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="sidebar-section search-box">
+            <input id="search-input" type="text" placeholder="Search places, artists...">
+            <div id="search-results"></div>
+        </div>
+
+        <!-- Scrollable content area for Layers/Legend -->
+        <div class="card-content">
+            <div class="sidebar-section legend-box">
+                <div id="legend-content">
+                    <!-- JS Builds Entire Legend -->
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- Floating Toggle Button for Mobile/Desktop Collapse -->
+    <button id="sidebar-toggle" aria-label="Toggle panel">←</button>
+
+    <!-- ABOUT WINDOW OVERLAY -->
+    <div id="map-guide-overlay">
+        <div class="guide-window">
+            <button id="map-guide-close">✕</button>
+            <h2>Queens Culture Connect</h2>
+            <p>The Queens Culture Connect links residents, visitors, artists, and organizations across Queens through an interactive cultural map. <a href="https://elwanda52071.preview.softr.app/information">Click here to learn more about the project</a></p>
+            <ul class="guide-list">
+                <li>• Search organizations</li>
+                <li>• Browse artists by neighborhood</li>
+                <li>• Discover nearby transit</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
