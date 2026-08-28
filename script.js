@@ -47,12 +47,6 @@ map.touchZoomRotate.enable();
 // AIRTABLE SETUP
 // =====================================================
 
-//const AIRTABLE_API_KEY = 'patpV5hVI94I8RPEx.b0a91a750728794e42bba6d8fd2c8d10d380b869e1078345962ab7277c331d20';
-
-
-// REMOVE THIS:
-// const AIRTABLE_API_KEY = 'patpV5hVI94...';
-
 // Replace with your Cloudflare Worker deployment domain:
 const PROXY_URL = 'https://airtable-proxy.nolen-scruggs.workers.dev'; 
 
