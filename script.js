@@ -12,9 +12,22 @@ const map = new mapboxgl.Map({
   zoom: 11
 });
 
+//Add Navigation control
 map.addControl(
   new mapboxgl.NavigationControl({
     showCompass: true
+  }),
+  'top-right'
+);
+
+// Add Geolocate/Self-Locate Control
+map.addControl(
+  new mapboxgl.GeolocateControl({
+    positionOptions: {
+      enableHighAccuracy: true
+    },
+    trackUserLocation: true,
+    showUserHeading: true
   }),
   'top-right'
 );
@@ -34,10 +47,10 @@ map.touchZoomRotate.enable();
 // AIRTABLE SETUP
 // =====================================================
 
-const AIRTABLE_API_KEY = 'patpV5hVI94I8RPEx.b0a91a750728794e42bba6d8fd2c8d10d380b869e1078345962ab7277c331d20';
+const AIRTABLE_API_KEY = 'patboskAQTJUi9FlQ.1c30c3c632cd4d7bd03cf949e50edd922425aba8dcbf0c8a6002e98db67c74a3';
 
 const BASE_ID =
-  'appirTxnn4ahpwSuk';
+  'apppBx0a9hj0Z1ciw';
 
 const TABLE_NAME =
   'tblgqyoE5TZUzQDKw';
@@ -50,7 +63,7 @@ const AIRTABLE_URL =
 // =====================================================
 
 
-const ARTIST_BASE_ID = 'appirTxnn4ahpwSuk';
+const ARTIST_BASE_ID = 'apppBx0a9hj0Z1ciw';
 const ARTIST_TABLE_NAME = 'tbl9OiPT8QI8ss20e';
 
 const ARTIST_URL =
@@ -210,37 +223,70 @@ const iconMap = {
 // FETCH ORGANIZATION DATA
 // =====================================================
 
+// =====================================================
+// FETCH ORGANIZATION DATA & AUTO-GEOCODE MISSING LAT/LNG
+// =====================================================
+
 async function fetchData() {
-
-  const filterFormula =
-    encodeURIComponent("{Approved}=TRUE()");
-
-  const viewName =
-    encodeURIComponent("main");
-
+  const filterFormula = encodeURIComponent("{Approved}=TRUE()");
+  const viewName = encodeURIComponent("main");
   let allRecords = [];
   let offset = null;
 
   do {
-
-    const fetchUrl =
-      `${AIRTABLE_URL}?view=${viewName}&filterByFormula=${filterFormula}${offset ? `&offset=${offset}` : ''}`;
-
+    const fetchUrl = `${AIRTABLE_URL}?view=${viewName}&filterByFormula=${filterFormula}${offset ? `&offset=${offset}` : ''}`;
     const res = await fetch(fetchUrl, {
-      headers: {
-        Authorization:
-          `Bearer ${AIRTABLE_API_KEY}`
-      }
+      headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
     });
 
     const data = await res.json();
-
-    allRecords =
-      allRecords.concat(data.records || []);
-
+    allRecords = allRecords.concat(data.records || []);
     offset = data.offset || null;
-
   } while (offset);
+
+  // Check for approved records missing Lat/Long and auto-assign them
+  for (const record of allRecords) {
+    const fields = record.fields;
+    const hasLat = fields.Latitude && !isNaN(parseFloat(fields.Latitude));
+    const hasLng = fields.Longitude && !isNaN(parseFloat(fields.Longitude));
+
+    if ((!hasLat || !hasLng) && fields.Address) {
+      console.log(`Geocoding missing coordinates for: ${fields["Org Name"] || record.id}`);
+      
+      const query = encodeURIComponent(`${fields.Address}, Queens, NY`);
+      const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${mapboxgl.accessToken}&limit=1`;
+
+      try {
+        const geoRes = await fetch(geocodeUrl);
+        const geoData = await geoRes.json();
+
+        if (geoData.features && geoData.features.length > 0) {
+          const [lng, lat] = geoData.features[0].center;
+
+          // Assign locally so the map draws it immediately
+          fields.Latitude = String(lat);
+          fields.Longitude = String(lng);
+
+          // Write back to Airtable asynchronously
+          fetch(`${AIRTABLE_URL}/${record.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              fields: {
+                Latitude: String(lat),
+                Longitude: String(lng)
+              }
+            })
+          });
+        }
+      } catch (err) {
+        console.error(`Failed to geocode record ${record.id}:`, err);
+      }
+    }
+  }
 
   return allRecords;
 }
@@ -595,7 +641,7 @@ console.log("Neighborhood counts:", neighborhoodCounts);
   'case',
   ['boolean', ['feature-state', 'hover'], false],
   0.95,
-  0.75
+  0.45
 ]
       }
     });
@@ -656,19 +702,28 @@ map.on('mouseleave', 'artist-fill-layer', () => {
   // =====================================================
 
   if (!map.getLayer('artist-outline-layer')) {
-
     map.addLayer({
       id: 'artist-outline-layer',
       type: 'line',
       source: 'artists-nta',
-
       paint: {
-        'line-color': 'rgba(255, 255, 255, 0.8)',
-        'line-width': 1
+        // Outline brightens and thickens drastically on hover
+        'line-color': [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          '#dfe300', // Vibrant iOS Yellow border on hover
+          '#222222'  // Dark default border
+        ],
+        'line-width': [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          4,   // Bold 4px border when hovered
+          1.5  // 1.5px default
+        ],
+        'line-opacity': 1.0
       }
     });
   }
-
   // =====================================================
   // OPEN INITIALLY
   // =====================================================
@@ -710,7 +765,7 @@ if (clickedMarker) return;
       feature.properties.artist_count || 0;
 
     const filterLink =
-      `${ARTIST_DIRECTORY_URL}?filter-by-Neighborhood=${encodeURIComponent(name)}`;
+      `${ARTIST_DIRECTORY_URL}?filter-by-Neighborhood_Lookup=${encodeURIComponent(name)}`;
 
     new mapboxgl.Popup()
       .setLngLat(e.lngLat)
@@ -983,34 +1038,37 @@ const organizationsSection =
  
 
   // Populate organization items
+ // Populate organization items
   Object.entries(organizationTagGroups)
     .sort(([a], [b]) => a.localeCompare(b))
     .forEach(([tag, markers]) => {
       const category = document.createElement('div');
       const header = document.createElement('div');
 
+      const leftContainer = document.createElement('div');
+      leftContainer.style.display = 'flex';
+      leftContainer.style.alignItems = 'center';
+
       const colorDot = document.createElement('span');
-
-      colorDot.style.background =
-      tagColors[tag] || '#666';
-
+      colorDot.style.background = tagColors[tag] || '#666';
       colorDot.style.width = '12px';
       colorDot.style.height = '12px';
       colorDot.style.borderRadius = '50%';
       colorDot.style.display = 'inline-block';
       colorDot.style.marginRight = '6px';
 
-      header.innerHTML =
-      `<span class="arrow">▸</span>`;
-
-      header.appendChild(colorDot);
-
-      const textNode =
-        document.createElement('span');
-
+      const textNode = document.createElement('span');
       textNode.textContent = tag;
 
-      header.appendChild(textNode);
+      leftContainer.appendChild(colorDot);
+      leftContainer.appendChild(textNode);
+
+      const arrowSpan = document.createElement('span');
+      arrowSpan.className = 'arrow';
+      arrowSpan.textContent = '▸';
+
+      header.appendChild(leftContainer);
+      header.appendChild(arrowSpan);
 
       header.className = 'legend-category-header';
 
@@ -1164,7 +1222,7 @@ artistsSection.checkbox.addEventListener('change', e => {
           // Open popup at the center of the neighborhood
           const name = match.properties.ntaname;
           const count = match.properties.artist_count || 0;
-          const filterLink = `${ARTIST_DIRECTORY_URL}?search=${encodeURIComponent(name)}`;
+          const filterLink = `${ARTIST_DIRECTORY_URL}?filter-by-Neighborhood_Lookup=${encodeURIComponent(name)}`;
 
           new mapboxgl.Popup()
             .setLngLat(center)
