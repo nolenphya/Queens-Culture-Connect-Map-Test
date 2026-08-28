@@ -749,7 +749,7 @@ if (clickedMarker) return;
       feature.properties.artist_count || 0;
 
     const filterLink =
-      `${ARTIST_DIRECTORY_URL}?filter-by-NTA_Map=${encodeURIComponent(name)}`;
+      `${ARTIST_DIRECTORY_URL}?filter-by-NTA=${encodeURIComponent(name)}`;
 
     new mapboxgl.Popup()
       .setLngLat(e.lngLat)
@@ -1206,7 +1206,7 @@ artistsSection.checkbox.addEventListener('change', e => {
           // Open popup at the center of the neighborhood
           const name = match.properties.ntaname;
           const count = match.properties.artist_count || 0;
-          const filterLink = `${ARTIST_DIRECTORY_URL}?filter-by-NTA_Map=${encodeURIComponent(name)}`;
+          const filterLink = `${ARTIST_DIRECTORY_URL}?filter-by-NTA=${encodeURIComponent(name)}`;
 
           new mapboxgl.Popup()
             .setLngLat(center)
