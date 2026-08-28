@@ -54,7 +54,7 @@ map.touchZoomRotate.enable();
 // const AIRTABLE_API_KEY = 'patpV5hVI94...';
 
 // Replace with your Cloudflare Worker deployment domain:
-const PROXY_URL = 'https://airtable-proxy.nolen-scruggs.workers.dev/'; 
+const PROXY_URL = 'https://airtable-proxy.nolen-scruggs.workers.dev'; 
 
 const BASE_ID = 'appirTxnn4ahpwSuk';
 const TABLE_NAME = 'tblgqyoE5TZUzQDKw';
@@ -230,9 +230,9 @@ async function fetchData() {
 
   do {
     const fetchUrl = `${AIRTABLE_URL}?view=${viewName}&filterByFormula=${filterFormula}${offset ? `&offset=${offset}` : ''}`;
-    const res = await fetch(fetchUrl, {
-      headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
-    });
+    
+    // REMOVED Authorization header here:
+    const res = await fetch(fetchUrl);
 
     const data = await res.json();
     allRecords = allRecords.concat(data.records || []);
@@ -299,12 +299,8 @@ async function fetchArtistData() {
     const url =
       `${ARTIST_URL}${offset ? `?offset=${offset}` : ''}`;
 
-    const res = await fetch(url, {
-      headers: {
-        Authorization:
-          `Bearer ${AIRTABLE_API_KEY}`
-      }
-    });
+    // REMOVED Authorization header here:
+    const res = await fetch(url);
 
     const data = await res.json();
 
