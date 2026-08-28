@@ -47,27 +47,22 @@ map.touchZoomRotate.enable();
 // AIRTABLE SETUP
 // =====================================================
 
-const AIRTABLE_API_KEY = 'patpV5hVI94I8RPEx.b0a91a750728794e42bba6d8fd2c8d10d380b869e1078345962ab7277c331d20';
-
-const BASE_ID =
-  'appirTxnn4ahpwSuk';
-
-const TABLE_NAME =
-  'tblgqyoE5TZUzQDKw';
-
-const AIRTABLE_URL =
-  `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
-
-// =====================================================
-// ARTIST AIRTABLE
-// =====================================================
+//const AIRTABLE_API_KEY = 'patpV5hVI94I8RPEx.b0a91a750728794e42bba6d8fd2c8d10d380b869e1078345962ab7277c331d20';
 
 
-const ARTIST_BASE_ID = 'appirTxnn4ahpwSuk';
+// REMOVE THIS:
+// const AIRTABLE_API_KEY = 'patpV5hVI94...';
+
+// Replace with your Cloudflare Worker deployment domain:
+const PROXY_URL = 'https://airtable-proxy.nolen-scruggs.workers.dev/'; 
+
+const BASE_ID = 'appirTxnn4ahpwSuk';
+const TABLE_NAME = 'tblgqyoE5TZUzQDKw';
 const ARTIST_TABLE_NAME = 'tbl9OiPT8QI8ss20e';
 
-const ARTIST_URL =
-  `https://api.airtable.com/v0/${ARTIST_BASE_ID}/${ARTIST_TABLE_NAME}`;
+// Point directly to the proxy path
+const AIRTABLE_URL = `${PROXY_URL}/${BASE_ID}/${TABLE_NAME}`;
+const ARTIST_URL = `${PROXY_URL}/${BASE_ID}/${ARTIST_TABLE_NAME}`;
 
 // =====================================================
 // GLOBALS
@@ -269,18 +264,17 @@ async function fetchData() {
 
           // Write back to Airtable asynchronously
           fetch(`${AIRTABLE_URL}/${record.id}`, {
-            method: 'PATCH',
-            headers: {
-              'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              fields: {
-                Latitude: String(lat),
-                Longitude: String(lng)
-              }
-            })
-          });
+  method: 'PATCH',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fields: {
+      Latitude: String(lat),
+      Longitude: String(lng)
+    }
+  })
+});
         }
       } catch (err) {
         console.error(`Failed to geocode record ${record.id}:`, err);
