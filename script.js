@@ -62,6 +62,8 @@ const ARTIST_URL = `${PROXY_URL}/${BASE_ID}/${ARTIST_TABLE_NAME}`;
 // GLOBALS
 // =====================================================
 
+let currentPopup = null;
+
 let allMarkers = [];
 
 let organizationsVisible = true;
@@ -366,28 +368,36 @@ function createMarkers(data) {
     const orgLink = `${ORG_PROFILE_URL}?recordId=${row.id}`;
     const imageUrl = Array.isArray(row.Image) && row.Image.length > 0 ? row.Image[0].url : '';
 
-    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-      <div style="max-width:250px;">
-        ${imageUrl ? `<img src="${imageUrl}" style="width:100%;margin-bottom:10px;">` : ''}
-        <h3>${row['Org Name'] || 'Untitled'}</h3>
-        ${row.Tagline ? `<p>${row.Tagline}</p>` : ''}
-        ${row.Address ? `<p><b>Address:</b><br>${row.Address}</p>` : ''}
-        <p style="margin-top:10px;">
-          <a href="${orgLink}" target="_blank">View Organization Profile</a>
-        </p>
-      </div>
-    `);
+// Inside createMarkers() data loop:
+const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+  <div style="max-width:250px;">
+    ${imageUrl ? `<img src="${imageUrl}" style="width:100%;margin-bottom:10px;">` : ''}
+    <h3>${row['Org Name'] || 'Untitled'}</h3>
+    ${row.Tagline ? `<p>${row.Tagline}</p>` : ''}
+    ${row.Address ? `<p><b>Address:</b><br>${row.Address}</p>` : ''}
+    <p style="margin-top:10px;">
+      <a href="${orgLink}" target="_blank">View Organization Profile</a>
+    </p>
+  </div>
+`);
 
-    const marker = new mapboxgl.Marker({ element: el })
-      .setLngLat([lng, lat])
-      .setPopup(popup)
-      .addTo(map);
+// Remove setPopup() from marker instantiation so Mapbox doesn't bind duplicate trigger logic
+const marker = new mapboxgl.Marker({ element: el })
+  .setLngLat([lng, lat])
+  .addTo(map);
 
-    el.addEventListener('click', (e) => {
-      e.stopPropagation(); // Stop click from propagating to underlying Mapbox canvas/fill layers
-      marker.togglePopup();
-    });
+el.addEventListener('click', (e) => {
+  e.stopPropagation();
 
+  // If a popup is already open, close it
+  if (currentPopup && currentPopup.isOpen()) {
+    currentPopup.remove();
+  }
+
+  // Open new popup and store reference
+  popup.setLngLat([lng, lat]).addTo(map);
+  currentPopup = popup;
+});
     marker.rowData = row;
     marker.labelElement = label;
 
