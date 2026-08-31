@@ -396,12 +396,25 @@ FIX FOR SLIDING MARKERS DURING DRAG + MARKER TEXT STYLING
     will-change: transform;
 }
 
+/* Custom marker wrapper container fix */
+.custom-marker {
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.custom-marker:hover {
+    transform: scale(1.18);
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.25));
+    z-index: 999 !important;
+}
+
 /* Ensure inner label centers cleanly relative to the 36px parent circle */
 .marker-label {
     position: absolute;
     top: 40px;
     left: 50%;
-    transform: translateX(-50%) !important;
+    transform: translateX(-50%);
     white-space: nowrap;
     text-align: center;
     pointer-events: none;

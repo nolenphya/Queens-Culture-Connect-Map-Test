@@ -339,7 +339,6 @@ function createMarkers(data) {
     el.style.borderRadius = '50%';
     el.style.border = '2px solid white';
     el.style.boxShadow = '0 1px 4px rgba(0,0,0,0.35)';
-    el.style.position = 'relative';
 
     // Inner Icon Image
     const img = document.createElement('img');
@@ -353,21 +352,6 @@ function createMarkers(data) {
     img.style.pointerEvents = 'none';
 
     el.appendChild(img);
-
-    // Hover Animation Handlers
-    el.style.transition = 'transform .18s ease, filter .18s ease';
-
-    el.addEventListener('mouseenter', () => {
-      el.style.transform = 'translateY(-4px) scale(1.18)';
-      el.style.filter = 'drop-shadow(0 8px 18px rgba(0,0,0,.25))';
-      el.style.zIndex = '999';
-    });
-
-    el.addEventListener('mouseleave', () => {
-      el.style.transform = 'translateY(0) scale(1)';
-      el.style.filter = 'none';
-      el.style.zIndex = '';
-    });
 
     el.style.display = organizationsVisible ? 'block' : 'none';
 
@@ -394,13 +378,13 @@ function createMarkers(data) {
       </div>
     `);
 
-    // FIX: Set anchor to 'center' so Mapbox locks geographic center properly
-    const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+    const marker = new mapboxgl.Marker({ element: el })
       .setLngLat([lng, lat])
       .setPopup(popup)
       .addTo(map);
 
-    el.addEventListener('click', () => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation(); // Stop click from propagating to underlying Mapbox canvas/fill layers
       marker.togglePopup();
     });
 
@@ -417,7 +401,6 @@ function createMarkers(data) {
     });
   });
 }
-
 // =====================================================
 // LOAD ARTIST CHOROPLETH
 // =====================================================
@@ -651,41 +634,27 @@ map.setLayoutProperty(
   // POPUPS
   // =====================================================
 
+
   map.on('click', 'artist-fill-layer', e => {
+    // Ignore clicks if the artist layer is hidden
+    if (!artistsVisible) return;
 
-const clickedMarker =
-  e.originalEvent.target.closest('.mapboxgl-marker');
+    const clickedMarker = e.originalEvent.target.closest('.mapboxgl-marker');
+    if (clickedMarker) return;
 
-if (clickedMarker) return;
+    const feature = e.features[0];
+    const name = feature.properties.ntaname;
+    const count = feature.properties.artist_count || 0;
 
-    const feature =
-      e.features[0];
-
-    const name =
-      feature.properties.ntaname;
-
-    const count =
-      feature.properties.artist_count || 0;
-
-    const filterLink =
-      `${ARTIST_DIRECTORY_URL}?filter-by-NTA=${encodeURIComponent(name)}`;
+    const filterLink = `${ARTIST_DIRECTORY_URL}?filter-by-NTA=${encodeURIComponent(name)}`;
 
     new mapboxgl.Popup()
       .setLngLat(e.lngLat)
       .setHTML(`
         <div style="max-width:220px;">
           <h3>${name}</h3>
-
-          <p>
-            ${count} artist${count === 1 ? '' : 's'}
-          </p>
-
-          <a
-            href="${filterLink}"
-            target="_blank"
-          >
-            View Artists
-          </a>
+          <p>${count} artist${count === 1 ? '' : 's'}</p>
+          <a href="${filterLink}" target="_blank">View Artists</a>
         </div>
       `)
       .addTo(map);
