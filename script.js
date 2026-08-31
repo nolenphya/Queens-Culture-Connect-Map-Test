@@ -631,36 +631,37 @@ console.log("Neighborhood counts:", neighborhoodCounts);
     });
   }
 
-  map.on('mousemove', 'artist-fill-layer', (e) => {
-
-  if (!e.features.length) return;
+map.on('mousemove', 'artist-fill-layer', (e) => {
+  // Prevent hover effects if the layer is turned off
+  if (!artistsVisible || !e.features.length) return;
 
   if (hoveredNtaId !== null) {
-
     map.setFeatureState(
-      {
-        source: 'artists-nta',
-        id: hoveredNtaId
-      },
-      {
-        hover: false
-      }
+      { source: 'artists-nta', id: hoveredNtaId },
+      { hover: false }
     );
   }
 
   hoveredNtaId = e.features[0].id;
 
   map.setFeatureState(
-    {
-      source: 'artists-nta',
-      id: hoveredNtaId
-    },
-    {
-      hover: true
-    }
+    { source: 'artists-nta', id: hoveredNtaId },
+    { hover: true }
   );
 });
 
+map.on('mouseleave', 'artist-fill-layer', () => {
+  if (!artistsVisible) return;
+
+  if (hoveredNtaId !== null) {
+    map.setFeatureState(
+      { source: 'artists-nta', id: hoveredNtaId },
+      { hover: false }
+    );
+  }
+
+  hoveredNtaId = null;
+});
 map.on('mouseleave', 'artist-fill-layer', () => {
 
   if (hoveredNtaId !== null) {
