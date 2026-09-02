@@ -2,19 +2,14 @@
 // MAP SETUP
 // =====================================================
 
-import mapboxgl from 'mapbox-gl';
-
-// Set a dummy string so Mapbox GL JS doesn't throw a missing token error
-mapboxgl.accessToken = 'pk.proxy';
-
-// Override default requests to route through your Cloudflare Worker
-mapboxgl.config.API_URL = 'https://mapbox-proxy.nolen-scruggs.workers.dev';
+mapboxgl.accessToken =
+  'pk.eyJ1IjoiZmx1c2hpbmd0b3duaGFsbCIsImEiOiJjbWRmZHFxb2EwY2p3MmlxM3JoMmJwNDVrIn0.KDnT79yQuUeYVaqcKlmQGQ';
 
 const map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/light-v11',
-  center: [-73.985, 40.748],
-  zoom: 12,
+  center: [-73.94, 40.73],
+  zoom: 11
 });
 
 //Add Navigation control
