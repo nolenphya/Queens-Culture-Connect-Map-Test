@@ -209,11 +209,6 @@ const iconMap = {
   'Video-Film Company': '#00B7C7'
 };
 
-
-// =====================================================
-// FETCH ORGANIZATION DATA
-// =====================================================
-
 // =====================================================
 // FETCH ORGANIZATION DATA & AUTO-GEOCODE MISSING LAT/LNG
 // =====================================================
@@ -286,30 +281,21 @@ async function fetchData() {
 // =====================================================
 
 async function fetchArtistData() {
-
+  const filterFormula = encodeURIComponent("{Approved}=TRUE()");
   let records = [];
   let offset = null;
 
   do {
-
-    const url =
-      `${ARTIST_URL}${offset ? `?offset=${offset}` : ''}`;
-
-    // REMOVED Authorization header here:
+    const url = `${ARTIST_URL}?filterByFormula=${filterFormula}${offset ? `&offset=${offset}` : ''}`;
     const res = await fetch(url);
-
     const data = await res.json();
 
-    records =
-      records.concat(data.records || []);
-
+    records = records.concat(data.records || []);
     offset = data.offset || null;
-
   } while (offset);
 
   return records.map(r => r.fields);
 }
-
 // =====================================================
 // CREATE ORGANIZATION MARKERS
 // =====================================================
